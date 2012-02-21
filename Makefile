@@ -1,10 +1,14 @@
 CXXFLAGS = -std=gnu++0x -g -O0 -I$(LIBUV_PATH)/include -I$(HTTP_PARSER_PATH) -I. -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
 OS_NAME=$(shell uname -s)
-ifeq (${OS_NAME},Darwin)
-	RTLIB=
+ifeq (MINGW,$(findstring MINGW,$(OS_NAME)))
+	RTLIB=-lws2_32 -lpsapi -liphlpapi
 else
-	RTLIB=-lrt
+	ifeq (Darwin,$(findstring Darwin,$(OS_NAME)))
+		RTLIB=
+	else
+		RTLIB=-lrt
+	endif
 endif
 
 all: webclient webserver file_test
