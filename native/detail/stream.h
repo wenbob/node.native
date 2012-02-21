@@ -4,6 +4,12 @@
 #include "base.h"
 #include "handle.h"
 
+#if defined(__unix__) || defined(__POSIX__) || defined(__APPLE__)
+#define UV_BUF(base, len) {base, len}
+#else
+#define UV_BUF(base, len) {len, base}
+#endif
+
 namespace native
 {
     namespace detail
@@ -150,7 +156,7 @@ namespace native
                 // TODO: Better memory management needed here.
                 // Something like 'slab' in the original node.js implementation.
 
-                return uv_buf_t { new char[suggested_size], suggested_size };
+                return uv_buf_t UV_BUF( new char[suggested_size], suggested_size );
             };
 
             void after_read_(uv_stream_t* handle, ssize_t nread, uv_buf_t buf, uv_handle_type pending)

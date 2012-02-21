@@ -2,10 +2,14 @@ CXXFLAGS = -std=gnu++0x -Iext/libuv/include -Iext/http-parser -D_LARGEFILE_SOURC
 CXXFLAGS_DEBUG = $(CXXFLAGS) -g -O0
 
 OS_NAME=$(shell uname -s)
-ifeq (${OS_NAME},Darwin)
-	RTLIB=
+ifeq (MINGW,$(findstring MINGW,$(OS_NAME)))
+	RTLIB=-lws2_32 -lpsapi -liphlpapi
 else
-	RTLIB=-lrt
+	ifeq (Darwin,$(findstring Darwin,$(OS_NAME)))
+		RTLIB=
+	else
+		RTLIB=-lrt
+	endif
 endif
 
 all: native.a echo
